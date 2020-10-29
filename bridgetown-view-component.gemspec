@@ -4,11 +4,11 @@ require_relative "lib/bridgetown-view-component/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "bridgetown-view-component"
-  spec.version       = BridgetownViewComponent::VERSION
+  spec.version       = Bridgetown::ViewComponent::VERSION
   spec.author        = "Bridgetown Team"
   spec.email         = "maintainers@bridgetownrb.com"
   spec.summary       = "Brings GitHub's ViewComponent library to Bridgetown"
-  spec.homepage      = "https://github.com/username/bridgetown-view-component"
+  spec.homepage      = "https://github.com/bridgetownrb/bridgetown-view-component"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r!^(test|script|spec|features|frontend)/!) }

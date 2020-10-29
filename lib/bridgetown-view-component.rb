@@ -2,6 +2,8 @@
 
 require "bridgetown"
 require "action_view"
+require "view_component"
+require "view_component/compile_cache"
 
 unless defined?(Rails)
   module Rails
@@ -15,46 +17,25 @@ unless defined?(Rails)
   end
 end
 
-require "view_component"
-
-class VCHooks
-  def self.setup
-    Bridgetown::Hooks.register :site, :pre_render, reloadable: false do
-      @saved_call_methods = []
-      @slotted_components ||= Set.new
-
-      ViewComponent::CompileCache.cache.each do |component_class|
-        @saved_call_methods << [component_class, component_class.instance_method(:call)]
-        component_class.slots = {} # clear out any past slots
-        component_class.undef_method(:call)
-      end
-      ViewComponent::CompileCache.cache.clear
-    end
-
-    Bridgetown::Hooks.register :site, :post_render, reloadable: false do |post|
-      ViewComponent::CompileCache.cache.each do |component_class|
-        component_class.undef_method(:call)
-      end
-      ViewComponent::CompileCache.cache.clear
-      @saved_call_methods.each do |meth|
-        meth[0].define_method(:call, meth[1])
-      end
-    end
-  end
-end
-
-VCHooks.setup
-
 module Bridgetown
   module ViewComponent
-    def self.included(klass)
-      if defined?(Bridgetown) && Bridgetown.sites.present?
-        # Clear out previously-defined slots if present
-        if klass.slots.present?
-          klass.slots = {}
+    def self.setup_hooks
+      Bridgetown::Hooks.register :site, :pre_render, reloadable: false do
+        ::ViewComponent::CompileCache.cache.each do |component_class|
+          component_class.undef_method(:call)
         end
+        ::ViewComponent::CompileCache.cache.clear
       end
+  
+      Bridgetown::Hooks.register :site, :post_render, reloadable: false do |post|
+        ::ViewComponent::CompileCache.cache.each do |component_class|
+          component_class.undef_method(:call)
+        end
+        ::ViewComponent::CompileCache.cache.clear
+      end
+    end
 
+    def self.included(klass)
       klass.extend ClassMethods
     end
 
@@ -77,14 +58,13 @@ module Bridgetown
     end
 
     def render_in(view_context, &block)
-      if defined?(Bridgetown) && Bridgetown.sites.present?
+      if view_context.class.name.start_with? "Bridgetown"
         singleton_class.include ViewComponentHelpers
 
         ::ViewComponent::BridgetownCompiler.new(self.class).compile(raise_errors: true)
-        super
-      else
-        super
       end
+
+      super
     end
   end
 
@@ -125,6 +105,13 @@ module Bridgetown
   end
 end
 
+Bridgetown::PluginManager.new_source_manifest(
+  origin: Bridgetown::ViewComponent,
+  components: File.expand_path("../components", __dir__)
+)
+
+Bridgetown::ViewComponent.setup_hooks
+
 module Bridgetown
   module ComponentValidation
     def self.included(klass)
@@ -147,7 +134,7 @@ end
 
 Bridgetown::RubyTemplateView.class_eval do
   def lookup_context
-    OpenStruct.new(variants: [])
+    HashWithDotAccess::Hash.new(variants: [])
   end
 
   def view_renderer
@@ -158,10 +145,6 @@ Bridgetown::RubyTemplateView.class_eval do
     nil
   end
 end
-
-
-
-
 
 module ViewComponent
   class BridgetownCompiler < Compiler
