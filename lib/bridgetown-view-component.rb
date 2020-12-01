@@ -155,8 +155,18 @@ module Bridgetown
     def call
       @_erbout = Bridgetown::ERBBuffer.new
       value = nil
-      with_output_buffer { value = self.instance_exec(*@_captured_args, &@_captured_block) }
-      value
+      buffer = with_output_buffer { value = self.instance_exec(*@_captured_args, &@_captured_block) }
+      if (string = buffer.presence || value) && string.is_a?(String)
+        string
+      end
+    end
+  end
+
+  if defined?(Serbea)
+    class SerbeaCapturingViewComponent < CapturingViewComponent
+      alias_method :_erb_capture, :capture
+      include Serbea::Helpers
+      alias_method :capture, :_erb_capture
     end
   end
 end
@@ -175,7 +185,13 @@ Bridgetown::RubyTemplateView.class_eval do
   end
 
   def capture_in_view_component(*args, &block)
-    Bridgetown::CapturingViewComponent.new(*args, &block).render_in(self)&.html_safe
+    capturing_component = if defined?(Serbea)
+      Bridgetown::SerbeaCapturingViewComponent.new(*args, &block)
+    else
+      Bridgetown::CapturingViewComponent.new(*args, &block)
+    end
+    
+    capturing_component.render_in(self)&.html_safe
   end
 end
 
