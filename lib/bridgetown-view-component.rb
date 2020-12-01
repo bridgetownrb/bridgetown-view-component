@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "bridgetown"
+require "bridgetown-core"
 require "action_view"
 require "view_component"
 require "view_component/compile_cache"
@@ -15,19 +15,24 @@ unless defined?(Rails)
       nil
     end
   end
+
+  unless Rails.version.to_f >= 6.1
+    require "view_component/render_monkey_patch"
+    ActionView::Base.prepend ViewComponent::RenderMonkeyPatch
+  end
 end
 
 module Bridgetown
   module ViewComponent
     def self.setup_hooks
-      Bridgetown::Hooks.register :site, :pre_render, reloadable: false do
+      Bridgetown::Hooks.register :site, :pre_rendera, reloadable: false do
         ::ViewComponent::CompileCache.cache.each do |component_class|
           component_class.undef_method(:call)
         end
         ::ViewComponent::CompileCache.cache.clear
       end
   
-      Bridgetown::Hooks.register :site, :post_render, reloadable: false do |post|
+      Bridgetown::Hooks.register :site, :post_rendera, reloadable: false do |post|
         ::ViewComponent::CompileCache.cache.each do |component_class|
           component_class.undef_method(:call)
         end
@@ -58,7 +63,7 @@ module Bridgetown
     end
 
     def render_in(view_context, &block)
-      if view_context.class.name.start_with? "Bridgetown"
+      if view_context.class.name&.start_with? "Bridgetown"
         singleton_class.include ViewComponentHelpers
 
         ::ViewComponent::BridgetownCompiler.new(self.class).compile(raise_errors: true)
@@ -69,13 +74,21 @@ module Bridgetown
   end
 
   module ViewComponentHelpers
+    def self.helper_allow_list
+      @helper_allow_list ||= [:with_output_buffer]
+    end
+
+    def self.allow_rails_helpers(*helpers)
+      helper_allow_list.concat(helpers)
+    end
+
     def self.included(klass)
       helper_consts = ActionView::Helpers.constants.select do |c|
         ActionView::Helpers.const_get(c).is_a?(Module)
       end
       helper_consts.map { |c| ActionView::Helpers.const_get(c) }.each do |mod|
         (mod.public_instance_methods - Object.public_instance_methods).each do |method_name|
-          klass.undef_method(method_name)
+          klass.undef_method(method_name) unless helper_allow_list.include?(method_name)
         rescue NameError
           nil
         end
@@ -130,6 +143,22 @@ module Bridgetown
       end
     end
   end
+
+  class CapturingViewComponent < ::ViewComponent::Base
+    include Bridgetown::ViewComponent
+  
+    def initialize(*args, &block)
+      @_captured_args = args
+      @_captured_block = block
+    end
+  
+    def call
+      @_erbout = Bridgetown::ERBBuffer.new
+      value = nil
+      with_output_buffer { value = self.instance_exec(*@_captured_args, &@_captured_block) }
+      value
+    end
+  end
 end
 
 Bridgetown::RubyTemplateView.class_eval do
@@ -143,6 +172,10 @@ Bridgetown::RubyTemplateView.class_eval do
 
   def view_flow
     nil
+  end
+
+  def capture_in_view_component(*args, &block)
+    Bridgetown::CapturingViewComponent.new(*args, &block).render_in(self)&.html_safe
   end
 end
 
