@@ -160,6 +160,18 @@ module Bridgetown
         string
       end
     end
+
+    def method_missing(method, *args, &block)
+      if view_context.respond_to?(method.to_sym)
+        view_context.send method.to_sym, *args, &block
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method, include_private = false)
+      view_context.respond_to?(method.to_sym, include_private) || super
+    end
   end
 
   if defined?(Serbea)
