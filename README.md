@@ -2,10 +2,7 @@
 
 Bridgetown + ViewComponent = :heart:
 
-## Testing
-
-* Run `bundle exec rspec` to run the test suite
-* Or run `script/cibuild` to validate with Rubocop and test with rspec together.
+WIP — stay tuned!
 
 ## Contributing
 
