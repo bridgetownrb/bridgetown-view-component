@@ -30,9 +30,10 @@ end
 
 # Load classes/modules
 
-require "bridgetown-view-component/bridgetown/view_component"
-
 module Bridgetown
+  module ViewComponent
+  end
+
   autoload :ViewComponentHelpers,
            "bridgetown-view-component/bridgetown/view_component_helpers"
   autoload :ComponentValidation,
