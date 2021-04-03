@@ -7,6 +7,8 @@ require "view_component"
 # Create basic Rails namespace when in Bridgetown-only context
 unless defined?(Rails)
   module Rails
+    module UrlHelpers; end
+
     def self.version
       ActionView.version.to_s
     end
