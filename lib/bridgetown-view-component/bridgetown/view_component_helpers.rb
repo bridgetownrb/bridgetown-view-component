@@ -2,6 +2,12 @@
 
 module Bridgetown
   module ViewComponentHelpers
+    extend Forwardable
+
+    def_delegators :@view_context, :liquid_render, :partial
+
+    attr_reader :site # will be nil unless you explicitly set a `@site` ivar
+
     def self.helper_allow_list
       @helper_allow_list ||= %i(capture render t with_output_buffer)
     end
@@ -20,6 +26,18 @@ module Bridgetown
         rescue NameError
           nil
         end
+      end
+    end
+
+    def render(item, options = {}, &block)
+      if item.respond_to?(:render_in)
+        result = ""
+        capture do # this ensures no leaky interactions between BT<=>VC blocks
+          result = item.render_in(self, &block)
+        end
+        result&.html_safe
+      else
+        view_context.partial(item, options, &block)&.html_safe
       end
     end
 
