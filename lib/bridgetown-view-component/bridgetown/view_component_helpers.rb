@@ -3,7 +3,7 @@
 module Bridgetown
   module ViewComponentHelpers
     def self.helper_allow_list
-      @helper_allow_list ||= [:with_output_buffer]
+      @helper_allow_list ||= %i(capture render t with_output_buffer)
     end
 
     def self.allow_rails_helpers(*helpers)
@@ -21,11 +21,6 @@ module Bridgetown
           nil
         end
       end
-
-      klass.delegate :partial, to: :view_context
-      klass.delegate :render, to: :view_context
-      klass.delegate :capture, to: :view_context
-      klass.delegate :markdownify, to: :view_context
     end
 
     def helpers

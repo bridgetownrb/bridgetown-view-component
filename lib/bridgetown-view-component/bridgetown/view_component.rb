@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Bridgetown
-  module ViewComponent
+  module ViewComponentARCHIVED
     # NOTE: Currently not in use...might need to revisit when dual Rails/Bridgetown
     # installs are present
     def self.setup_hooks
@@ -45,8 +45,6 @@ module Bridgetown
     def render_in(view_context, &block)
       if view_context.class.name&.start_with? "Bridgetown"
         singleton_class.include ViewComponentHelpers
-
-        ::ViewComponent::BridgetownCompiler.new(self.class).compile(raise_errors: true)
       end
 
       super
