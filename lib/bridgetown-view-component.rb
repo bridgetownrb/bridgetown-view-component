@@ -15,7 +15,7 @@ unless defined?(Rails)
 
     def self.application
       @application ||= HashWithDotAccess::Hash.new({
-        routes: { url_helpers: UrlHelpers }
+        routes: { url_helpers: UrlHelpers },
       })
     end
 

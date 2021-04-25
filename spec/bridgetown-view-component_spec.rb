@@ -30,7 +30,8 @@ describe(Bridgetown::ViewComponent) do
     FileUtils.rm(source_dir("_data/site_metadata.yml"))
   end
 
-  it "outputs the sample Liquid tag" do
-    expect(contents).to match "This plugin works!"
+  #TODO: add tests!
+  it "outputs the sample component" do
+    expect(contents).to match "#TODO"
   end
 end
