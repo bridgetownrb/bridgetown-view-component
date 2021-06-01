@@ -1,8 +1,10 @@
 # ViewComponent for Bridgetown
 
-Bridgetown + ViewComponent = :heart:
+**Bridgetown + ViewComponent = :heart:**
 
-WIP — stay tuned!
+Install this plugin to enable ViewComponent support in your Bridgetown sites.
+
+[Documentation Here](https://www.bridgetownrb.com/docs/components/ruby#need-compatibility-with-rails-try-viewcomponent-experimental)
 
 ## Contributing
 

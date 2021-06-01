@@ -1,7 +1,5 @@
-# main
+# Changelog
 
-* Use this file to keep track of plugin updates
+# 0.7.0 / 2021-06-01
 
-# 0.1.0 / 2020-05-01
-
-* First version
+* Official release supporting Bridgetown 0.21.
