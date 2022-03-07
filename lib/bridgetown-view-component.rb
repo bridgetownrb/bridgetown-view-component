@@ -13,6 +13,11 @@ unless defined?(Rails)
       ActionView.version.to_s
     end
 
+    module VERSION
+      MAJOR = Rails.version.split(".")[0].to_i
+      MINOR = Rails.version.split(".")[1].to_i
+    end
+
     def self.application
       @application ||= HashWithDotAccess::Hash.new({
         routes: { url_helpers: UrlHelpers },

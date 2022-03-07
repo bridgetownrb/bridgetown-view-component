@@ -15,15 +15,15 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r!^spec/!)
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.5.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
-  spec.add_dependency "bridgetown", ">= 0.21.0", "< 2.0"
-  spec.add_dependency "view_component", ">= 2.32"
-  spec.add_dependency "actionview", "~> 6.0"
+  spec.add_dependency "bridgetown", ">= 1.0.0.beta3", "< 2.0"
+  spec.add_dependency "view_component", ">= 2.49"
+  spec.add_dependency "actionview", ">= 6.0"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "nokogiri", "~> 1.6"
-  spec.add_development_dependency "rake", "~> 12.0"
+  spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_development_dependency "rubocop-bridgetown", "~> 0.2"
+  spec.add_development_dependency "rubocop-bridgetown", "~> 0.3"
 end
