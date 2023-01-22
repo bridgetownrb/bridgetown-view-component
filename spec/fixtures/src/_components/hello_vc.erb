@@ -1,0 +1,9 @@
+Greetings <%= @name %>
+
+<%= tag.hr %>
+
+<ul>
+  <% posts.each do |post| %>
+    <li><%= markdownify post %></li>
+  <% end %>
+</ul>

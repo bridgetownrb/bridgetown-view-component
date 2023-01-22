@@ -47,25 +47,26 @@ module Bridgetown
            "bridgetown-view-component/bridgetown/component_validation"
 end
 
-# Set up the test components source manifest
-Bridgetown::PluginManager.new_source_manifest(
-  origin: Bridgetown::ViewComponent,
-  components: File.expand_path("../components", __dir__)
-)
+Bridgetown.initializer :"bridgetown-view-component" do |config|
+  config.source_manifest(
+    origin: Bridgetown::ViewComponent,
+    components: File.expand_path("../components", __dir__)
+  )
 
-# Add a few methods to Bridgetown's Ruby template superclasses
-[Bridgetown::RubyTemplateView, Bridgetown::Component].each do |klass|
-  klass.class_eval do
-    def lookup_context
-      HashWithDotAccess::Hash.new(variants: [])
-    end
+  # Add a few methods to Bridgetown's Ruby template superclasses
+  [Bridgetown::RubyTemplateView, Bridgetown::Component].each do |klass|
+    klass.class_eval do
+      def lookup_context
+        HashWithDotAccess::Hash.new(variants: [])
+      end
 
-    def view_renderer
-      nil
-    end
+      def view_renderer
+        nil
+      end
 
-    def view_flow
-      nil
+      def view_flow
+        nil
+      end
     end
   end
 end

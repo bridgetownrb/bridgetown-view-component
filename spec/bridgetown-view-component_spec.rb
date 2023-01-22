@@ -10,7 +10,9 @@ describe(Bridgetown::ViewComponent) do
       "root_dir"     => root_dir,
       "source"       => source_dir,
       "destination"  => dest_dir,
-    }, overrides))
+    }, overrides)).tap do |conf|
+      conf.run_initializers! context: :static
+    end
   end
   let(:metadata_overrides) { {} }
   let(:metadata_defaults) do
@@ -30,8 +32,10 @@ describe(Bridgetown::ViewComponent) do
     FileUtils.rm(source_dir("_data/site_metadata.yml"))
   end
 
-  #TODO: add tests!
-  it "outputs the sample component" do
-    expect(contents).to match "#TODO"
+  it "outputs the rendered ViewComponent" do
+    expect(contents).to match "Greetings Bridgetown"
+    expect(contents).to match "<hr>\n"
+    expect(contents).to match "<strong>Post 1</strong> <span>-&gt;</span>"
+    expect(contents).to match "<strong>Post 2</strong> <span>-&gt;</span>"
   end
 end

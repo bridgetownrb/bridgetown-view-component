@@ -1,0 +1,13 @@
+---
+layout: default
+---
+
+Testing this plugin:
+
+<%= render HelloVc.new(name: "Bridgetown") do |component |%>
+  <% ["Post 1", "Post 2"].each do |blog_post| %>
+    <% component.with_post do %>
+      **<%= blog_post %>** <span>-></span>
+    <% end %>
+  <% end %>
+<% end %>

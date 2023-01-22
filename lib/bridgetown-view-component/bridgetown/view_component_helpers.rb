@@ -42,12 +42,14 @@ module Bridgetown
     end
 
     def helpers
-      @helpers ||= Bridgetown::RubyTemplateView::Helpers.new(self, @view_context.site)
+      @helpers ||= Bridgetown::RubyTemplateView::Helpers.new(
+        self, view_context&.site || Bridgetown::Current.site
+      )
     end
 
-    def method_missing(method, *args, &block)
+    def method_missing(method, *args, **kwargs, &block)
       if helpers.respond_to?(method.to_sym)
-        helpers.send method.to_sym, *args, &block
+        helpers.send method.to_sym, *args, **kwargs, &block
       else
         super
       end

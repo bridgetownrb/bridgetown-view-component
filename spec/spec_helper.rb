@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 require "bridgetown"
+
+Bridgetown.begin!
+
+# rubocop:disable Lint/Void
+Bridgetown::Site # resolve weird autoload issue
+# rubocop:enable Lint/Void
 require File.expand_path("../lib/bridgetown-view-component", __dir__)
 
 Bridgetown.logger.log_level = :error

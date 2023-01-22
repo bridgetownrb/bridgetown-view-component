@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.7.0"
 
-  spec.add_dependency "bridgetown", ">= 1.0.0.beta3", "< 2.0"
+  spec.add_dependency "bridgetown", ">= 1.2.0.beta5", "< 2.0"
   spec.add_dependency "view_component", ">= 2.49"
   spec.add_dependency "actionview", ">= 6.0"
 
